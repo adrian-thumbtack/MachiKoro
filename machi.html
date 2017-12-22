@@ -15,7 +15,7 @@
 		overflow-y:hidden;
 		white-space: nowrap;
 	}
-	#playerOne {
+	#playerOne, #playerTwo {
 		overflow: auto;
 		white-space: nowrap;
 	}
@@ -126,33 +126,87 @@
 <div id="playerOne">
 <canvas id="myCanvas" width="2000" height="240"></canvas>
 </div>
+<div id="playerTwo">
+<canvas id="twoCanvas" width="2000" height="240"></canvas>
+</div>
 <script>
 var c = document.getElementById("myCanvas");
-var ctx = c.getContext("2d");
+var c2 = document.getElementById("twoCanvas");
+var ctx = [c.getContext("2d"), c2.getContext("2d")];
 var img = document.getElementsByClassName("shopImg");
-var playCards = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+//var playCards = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var playerDeck = [[],[]];
+var p = 0;
 	
 window.onload = function(){
-	ctx.strokeStyle = "red";
-	for (var i=0; i<=3; i++){
-		ctx.drawImage(img[i+15], 10+105*i, 10, 100, 140);
-		ctx.lineWidth = 5;
-		ctx.moveTo(10+105*i, 10);
-		ctx.lineTo(110+105*i, 150);
-		ctx.stroke();
+	for (var j=0; j<ctx.length; j++){
+		ctx[j].strokeStyle = "red";
+		for (var i=0; i<=3; i++){
+			ctx[j].drawImage(img[i+15], 10+105*i, 10, 100, 140);
+			ctx[j].lineWidth = 5;
+			ctx[j].moveTo(10+105*i, 10);
+			ctx[j].lineTo(110+105*i, 150);
+			ctx[j].stroke();
+		}
 	}
 	buy(0);
 	buy(2);
+	advance();
+	buy(0);
+	buy(2);
+	advance();
+}
+
+/*function buy(z){
+	ctx.drawImage(img[z], (10 + 105*(z+4)), (10 + 20*playCards[z]), 100, 140);
+	playCards[z]++;
+}*/
+
+function advance(){
+	if (p === 1){
+		p = 0;
+	}
+	else {
+		p++;
+	}
 }
 
 function buy(z){
-	ctx.drawImage(img[z], (10 + 105*(z+4)), (10 + 20*playCards[z]), 100, 140);
-	playCards[z]++;
+	index = 0;
+	for (var i=0; i<playerDeck[p].length; i++){
+		if (playerDeck[p][i][0] < z){
+			index++;
+		}
+		else if (playerDeck[p][i][0] === z){
+			index = i;
+		}
+	}
+	
+	if (index === playerDeck[p].length){
+		playerDeck[p].push([z,0]);
+	}
+	
+	if (playerDeck[p][index][0] === z){
+		playerDeck[p][index][1]++;
+		ctx[p].drawImage(img[z], 10 + 105*(index+4), -10+20*playerDeck[p][index][1], 100, 140);
+	}
+	else {
+		for (var i=index; i<playerDeck[p].length; i++){
+			ctx[p].clearRect(10+105*(i+4), 10, 100, 140+20*playerDeck[p][i][1]);
+		}
+		playerDeck[p].splice(index, 0, [z,1]);
+		for (var i=index; i<playerDeck[p].length; i++){
+			for (var j=0; j<playerDeck[p][i][1]; j++){
+				ctx[p].drawImage(img[playerDeck[p][i][0]], 10+105*(i+4), 10+20*j, 100, 140); 
+			}
+		}
+	}
+	advance();
 }
 
 function landmark(z){
-	ctx.clearRect(8+105*z, 8, 104, 144);
-	ctx.drawImage(img[z+15],10+105*z, 10, 100, 140);
+	ctx[p].clearRect(8+105*z, 8, 104, 144);
+	ctx[p].drawImage(img[z+15],10+105*z, 10, 100, 140);
 }
 
 function closeMenu(){
