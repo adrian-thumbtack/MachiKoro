@@ -58,6 +58,9 @@
 	}
 </style>
 <body>
+<div id="dice">
+<canvas id="diceRoll" height="120" width="2000"></canvas>
+</div>
 <div id="bank">
 <button id="wheatBtn" class = "shop" type="button" onclick="buy(0)">
 	<img id="wheat" class="shopImg" src="images/wheatField.png" alt="Wheat Field">
@@ -129,10 +132,18 @@
 <div id="playerTwo">
 <canvas id="twoCanvas" width="2000" height="240"></canvas>
 </div>
+<img class="diceImg" src="diceImg/one.png" style="display:none">
+<img class="diceImg" src="diceImg/two.png" style="display:none">
+<img class="diceImg" src="diceImg/three.png" style="display:none">
+<img class="diceImg" src="diceImg/four.png" style="display:none">
+<img class="diceImg" src="diceImg/five.png" style="display:none">
+<img class="diceImg" src="diceImg/six.png" style="display:none">
 <script>
 var c = document.getElementById("myCanvas");
 var c2 = document.getElementById("twoCanvas");
+var c3 = document.getElementById("diceRoll");
 var ctx = [c.getContext("2d"), c2.getContext("2d")];
+var ctxDice = c3.getContext("2d");
 var img = document.getElementsByClassName("shopImg");
 var playerDeck = [[],[]];
 var p = 0;
@@ -206,11 +217,23 @@ function landmark(z){
 function closeMenu(){
 	document.getElementById("bank").style.height = "0";
 	document.getElementById("open").style.width = "40px";
+	document.getElementById("dice").style.height = "120px";
 }
 
 function openMenu(){
 	document.getElementById("bank").style.height = "162px";
 	document.getElementById("open").style.width = "0";
+	document.getElementById("dice").style.height = "0";
+}
+
+function rollDice(){
+	dice = [Math.floor(Math.random()*6), Math.floor(Math.random()*6)];
+	total = dice[0] + dice[1];
+	diceImg = document.getElementsByClassName("diceImg");
+	for (var i=0; i<dice.length; i++){
+		ctxDice.clearRect(50+150*i, 10, 100, 100);
+		ctxDice.drawImage(diceImg[dice[i]], 50+150*i, 10, 100, 100);
+	}
 }
 </script>
 </body>
